@@ -696,7 +696,7 @@ def fftconvolve(in1, in2, mode="full", axes=None):
 
 
 def _calc_oa_lens(s1, s2):
-    """Calculate the optimal FFT lengths for overlapp-add convolution.
+    """Calculate the optimal FFT lengths for overlap-add convolution.
 
     The calculation is done for a single dimension.
 
@@ -3575,7 +3575,7 @@ def detrend(data: np.ndarray, axis: int = -1,
 
     Notes
     -----
-    Detrending can be interpreted as subtracting a least squares fit polyonimial:
+    Detrending can be interpreted as subtracting a least squares fit polynomial:
     Setting the parameter `type` to 'constant' corresponds to fitting a zeroth degree
     polynomial, 'linear' to a first degree polynomial. Consult the example below.
 
@@ -4344,7 +4344,7 @@ def sosfilt(sos, x, axis=-1, zi=None):
 
     See Also
     --------
-    zpk2sos, sos2zpk, sosfilt_zi, sosfiltfilt, sosfreqz
+    zpk2sos, sos2zpk, sosfilt_zi, sosfiltfilt, freqz_sos
 
     Notes
     -----
@@ -4461,7 +4461,7 @@ def sosfiltfilt(sos, x, axis=-1, padtype='odd', padlen=None):
 
     See Also
     --------
-    filtfilt, sosfilt, sosfilt_zi, sosfreqz
+    filtfilt, sosfilt, sosfilt_zi, freqz_sos
 
     Notes
     -----

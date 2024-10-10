@@ -1337,9 +1337,10 @@ def riccati_jn(n, x):
 def riccati_yn(n, x):
     """Compute Ricatti-Bessel function of the second kind and its derivative.
 
-    The Ricatti-Bessel function of the second kind is defined as :math:`x
+    The Ricatti-Bessel function of the second kind is defined here as :math:`+x
     y_n(x)`, where :math:`y_n` is the spherical Bessel function of the second
-    kind of order :math:`n`.
+    kind of order :math:`n`. *Note that this is in contrast to a common convention
+    that includes a minus sign in the definition.*
 
     This function computes the value and first derivative of the function for
     all orders up to and including `n`.
@@ -2492,6 +2493,15 @@ def berp_zeros(nt):
     .. [1] Zhang, Shanjie and Jin, Jianming. "Computation of Special
            Functions", John Wiley and Sons, 1996.
            https://people.sc.fsu.edu/~jburkardt/f77_src/special_functions/special_functions.html
+
+
+    Examples
+    --------
+    Compute the first 5 zeros of the derivative of the Kelvin function.
+
+    >>> from scipy.special import berp_zeros
+    >>> berp_zeros(5)
+    array([ 6.03871081, 10.51364251, 14.96844542, 19.41757493, 23.86430432])
 
     """
     if not isscalar(nt) or (floor(nt) != nt) or (nt <= 0):

@@ -901,10 +901,14 @@ add_newdoc(
     function by multiplying the result of ``betainc(a, b, x)`` by
     ``beta(a, b)``.
 
+    This function wraps the ``ibeta`` routine from the
+    Boost Math C++ library [2]_.
+
     References
     ----------
     .. [1] NIST Digital Library of Mathematical Functions
            https://dlmf.nist.gov/8.17
+    .. [2] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -988,10 +992,14 @@ add_newdoc(
     -----
     .. versionadded:: 1.11.0
 
+    This function wraps the ``ibetac`` routine from the
+    Boost Math C++ library [2]_.
+
     References
     ----------
     .. [1] NIST Digital Library of Mathematical Functions
            https://dlmf.nist.gov/8.17
+    .. [2] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -1046,10 +1054,16 @@ add_newdoc(
     betainc : regularized incomplete beta function
     gamma : gamma function
 
+    Notes
+    -----
+    This function wraps the ``ibeta_inv`` routine from the
+    Boost Math C++ library [2]_.
+
     References
     ----------
     .. [1] NIST Digital Library of Mathematical Functions
            https://dlmf.nist.gov/8.17
+    .. [2] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -1111,10 +1125,14 @@ add_newdoc(
     -----
     .. versionadded:: 1.11.0
 
+    This function wraps the ``ibetac_inv`` routine from the
+    Boost Math C++ library [2]_.
+
     References
     ----------
     .. [1] NIST Digital Library of Mathematical Functions
            https://dlmf.nist.gov/8.17
+    .. [2] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -2597,6 +2615,15 @@ add_newdoc(
     erf : Error function of a complex argument
     erfc : Complementary error function, ``1 - erf(x)``
     erfcinv : Inverse of the complementary error function
+
+    Notes
+    -----
+    This function wraps the ``erf_inv`` routine from the
+    Boost Math C++ library [1]_.
+
+    References
+    ----------
+    .. [1] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -4424,21 +4451,28 @@ add_newdoc("gdtrib",
 
     Notes
     -----
-    Wrapper for the CDFLIB [1]_ Fortran routine `cdfgam`.
 
-    The cumulative distribution function `p` is computed using a routine by
-    DiDinato and Morris [2]_. Computation of `b` involves a search for a value
-    that produces the desired value of `p`. The search relies on the
-    monotonicity of `p` with `b`.
+    The cumulative distribution function `p` is computed using the Cephes [1]_
+    routines `igam` and `igamc`. Computation of `b` involves a search for a value
+    that produces the desired value of `p` using Chandrupatla's bracketing
+    root finding algorithm [2]_.
+
+    Note that there are some edge cases where `gdtrib` is extended by taking
+    limits where they are uniquely defined. In particular
+    ``x == 0`` with ``p > 0`` and ``p == 0`` with ``x > 0``.
+    For these edge cases, a numerical result will be returned for
+    ``gdtrib(a, p, x)`` even though ``gdtr(a, gdtrib(a, p, x), x)`` is
+    undefined.
 
     References
     ----------
-    .. [1] Barry Brown, James Lovato, and Kathy Russell,
-           CDFLIB: Library of Fortran Routines for Cumulative Distribution
-           Functions, Inverses, and Other Parameters.
-    .. [2] DiDinato, A. R. and Morris, A. H.,
-           Computation of the incomplete gamma function ratios and their
-           inverse.  ACM Trans. Math. Softw. 12 (1986), 377-393.
+    .. [1] Cephes Mathematical Functions Library,
+           http://www.netlib.org/cephes/
+    .. [2] Chandrupatla, Tirupathi R.
+           "A new hybrid quadratic/bisection algorithm for finding the zero of a
+           nonlinear function without using derivatives".
+           Advances in Engineering Software, 28(3), 145-149.
+           https://doi.org/10.1016/s0965-9978(96)00051-8
 
     Examples
     --------
@@ -4452,7 +4486,7 @@ add_newdoc("gdtrib",
     Verify the inverse.
 
     >>> gdtrib(1.2, p, 5.6)
-    3.3999999999723882
+    3.3999999999999995
     """)
 
 add_newdoc("gdtrix",
@@ -4921,10 +4955,19 @@ add_newdoc("hyp1f1",
     hyp0f1 : confluent hypergeometric limit function
     hyp2f1 : Gaussian hypergeometric function
 
+    Notes
+    -----
+    For real values, this function uses the ``hyp1f1`` routine from the C++ Boost
+    library [2]_, for complex values a C translation of the specfun
+    Fortran library [3]_.
+
     References
     ----------
     .. [dlmf] NIST Digital Library of Mathematical Functions
               https://dlmf.nist.gov/13.2#E2
+    .. [2] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
+    .. [3] Zhang, Jin, "Computation of Special Functions", John Wiley
+           and Sons, Inc, 1996.
 
     Examples
     --------
@@ -6821,7 +6864,7 @@ add_newdoc("ncfdtr",
     dfd : array_like
         Degrees of freedom of the denominator sum of squares.  Range (0, inf).
     nc : array_like
-        Noncentrality parameter.  Should be in range (0, 1e4).
+        Noncentrality parameter.  Range [0, inf).
     f : array_like
         Quantiles, i.e. the upper limit of integration.
     out : ndarray, optional
@@ -6839,10 +6882,12 @@ add_newdoc("ncfdtr",
     ncfdtridfd : Inverse of `ncfdtr` with respect to `dfd`.
     ncfdtridfn : Inverse of `ncfdtr` with respect to `dfn`.
     ncfdtrinc : Inverse of `ncfdtr` with respect to `nc`.
+    scipy.stats.ncf : Non-central F distribution.
 
     Notes
     -----
-    Wrapper for the CDFLIB [1]_ Fortran routine `cdffnc`.
+    This function calculates the CDF of the non-central f distribution using
+    the Boost Math C++ library [1]_.
 
     The cumulative distribution function is computed using Formula 26.6.20 of
     [2]_:
@@ -6854,16 +6899,13 @@ add_newdoc("ncfdtr",
     where :math:`I` is the regularized incomplete beta function, and
     :math:`x = f d_n/(f d_n + d_d)`.
 
-    The computation time required for this routine is proportional to the
-    noncentrality parameter `nc`.  Very large values of this parameter can
-    consume immense computer resources.  This is why the search range is
-    bounded by 10,000.
+    Note that argument order of `ncfdtr` is different from that of the
+    similar ``cdf`` method of `scipy.stats.ncf`: `f` is the last
+    parameter of `ncfdtr` but the first parameter of ``scipy.stats.ncf.cdf``.
 
     References
     ----------
-    .. [1] Barry Brown, James Lovato, and Kathy Russell,
-           CDFLIB: Library of Fortran Routines for Cumulative Distribution
-           Functions, Inverses, and Other Parameters.
+    .. [1] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
     .. [2] Milton Abramowitz and Irene A. Stegun, eds.
            Handbook of Mathematical Functions with Formulas,
            Graphs, and Mathematical Tables. New York: Dover, 1972.
@@ -6907,7 +6949,7 @@ add_newdoc("ncfdtri",
     dfd : array_like
         Degrees of freedom of the denominator sum of squares.  Range (0, inf).
     nc : array_like
-        Noncentrality parameter.  Should be in range (0, 1e4).
+        Noncentrality parameter.  Range [0, inf).
     p : array_like
         Value of the cumulative distribution function.  Must be in the
         range [0, 1].
@@ -6925,6 +6967,20 @@ add_newdoc("ncfdtri",
     ncfdtridfd : Inverse of `ncfdtr` with respect to `dfd`.
     ncfdtridfn : Inverse of `ncfdtr` with respect to `dfn`.
     ncfdtrinc : Inverse of `ncfdtr` with respect to `nc`.
+    scipy.stats.ncf : Non-central F distribution.
+
+    Notes
+    -----
+    This function calculates the Quantile of the non-central f distribution
+    using the Boost Math C++ library [1]_.
+
+    Note that argument order of `ncfdtri` is different from that of the
+    similar ``ppf`` method of `scipy.stats.ncf`. `p` is the last parameter
+    of `ncfdtri` but the first parameter of ``scipy.stats.ncf.ppf``.
+
+    References
+    ----------
+    .. [1] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -7887,6 +7943,13 @@ add_newdoc("powm1", """
       and ``nan``.
     * ``powm1(1, y)`` returns 0 for any ``y``, including ``nan``
       and ``inf``.
+
+    This function wraps the ``powm1`` routine from the
+    Boost Math C++ library [1]_.
+
+    References
+    ----------
+    .. [1] The Boost Developers. "Boost C++ Libraries". https://www.boost.org/.
 
     Examples
     --------
@@ -9968,7 +10031,7 @@ add_newdoc(
     """
     _ncf_isf(x, v1, v2, l)
 
-    Inverse surivial function of noncentral F-distribution.
+    Inverse survival function of noncentral F-distribution.
 
     Parameters
     ----------
@@ -10149,7 +10212,7 @@ add_newdoc(
     """
     _nct_isf(x, v, l)
 
-    Inverse surivial function of noncentral t-distribution.
+    Inverse survival function of noncentral t-distribution.
 
     Parameters
     ----------
@@ -10299,7 +10362,7 @@ add_newdoc(
     """
     _skewnorm_isf(x, l, sc, sh)
 
-    Inverse surivial function of skewnorm distribution.
+    Inverse survival function of skewnorm distribution.
 
     Parameters
     ----------

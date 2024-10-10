@@ -3195,9 +3195,75 @@ const char *iv_doc = R"(
 const char *iv_ratio_doc = R"(
     _iv_ratio(v, x, out=None)
 
-    Internal function, do not use.
+    Internal function.
 
-    Return `iv(v, x) / iv(v-1, x)` for `v >= 1` and `x >= 0`.
+    Return `iv(v, x) / iv(v-1, x)` for `v >= 0.5` and `x >= 0`, where `iv`
+    is the modified Bessel function of the first kind.
+
+    Parameters
+    ----------
+    v : array_like of float
+        Order.  Must be `>= 0.5`.  May be `+inf` if `x` is finite.
+    x : array_like of float
+        Argument.  Must be `>= 0`.  May be `+inf` if `v` is finite.
+    out : ndarray, optional
+        Optional output array for the function values
+
+    Returns
+    -------
+    scalar or ndarray
+        Ratio between modified Bessel function of the first kind of adjacent
+        orders.  The returned value is between `0` and `1`, inclusive.
+
+        If either `v` or `x` is `nan`, `nan` is returned.  Otherwise, the
+        special values are:
+
+        - If `v < 0.5` or `x < 0`, set "domain" error and return `nan`.
+        - If `v >= 0.5` and `x == 0`, return `x`.
+        - If `v >= 0.5` and `x == +inf`, return `1.0`.
+        - If `v == +inf` and `0 < x < +inf`, return `0.0`.
+        - If `v == +inf` and `x == +inf`, set "domain" error and return `nan`.
+
+    See Also
+    --------
+    iv : modified Bessel function of the first kind
+
+    Notes
+    -----
+    The function is computed using the _Perron continued fraction_ of [1]_.
+    The continued fraction is evaluated using the "series method" of [2]_.
+    Kahan summation is used to evaluate the series.
+
+    The accuracy is tested numerically with 600,000 trials.  The peak
+    relative error is `3.4e-16`; the RMSE is `0.9e-16`.
+
+    Reference
+    ---------
+    .. [1] Gautschi, W. and Slavik, J. (1978). "On the computation of
+           modified Bessel function ratios." Mathematics of Computation,
+           32(143):865-875.
+
+    .. [2] Gautschi, W. (1967). “Computational Aspects of Three-Term
+           Recurrence Relations.” SIAM Review, 9(1):24-82.
+
+    )";
+
+const char *iv_ratio_c_doc = R"(
+    _iv_ratio_c(v, x, out=None)
+
+    Internal function.
+
+    Return `1 - iv(v, x) / iv(v-1, x)` for `v >= 0.5` and `x >= 0`, where
+    `iv` is the modified Bessel function of the first kind.
+
+    Notes
+    -----
+    See `_iv_ratio` for details about the parameters, return value, and
+    algorithm.
+
+    The accuracy is tested numerically with 600,000 trials.  The peak
+    relative error is `9.0e-16`; the RMSE is `1.5e-16`.
+
     )";
 
 const char *ive_doc = R"(
@@ -4696,6 +4762,42 @@ const char *mathieu_cem_doc = R"(
     --------
     mathieu_a, mathieu_b, mathieu_sem
 
+    Notes
+    -----
+    The even Mathieu functions are the solutions to Mathieu's differential equation
+
+    .. math::
+
+        \frac{d^2y}{dx^2} + (a_m - 2q \cos(2x))y = 0
+
+    for which the characteristic number :math:`a_m` (calculated with `mathieu_a`)
+    results in an odd, periodic solution :math:`y(x)` with period 180 degrees
+    (for even :math:`m`) or 360 degrees (for odd :math:`m`).
+
+    References
+    ----------
+    .. [1] 'Mathieu function'. *Wikipedia*.
+           https://en.wikipedia.org/wiki/Mathieu_function
+
+    Examples
+    --------
+    Plot even Mathieu functions of orders ``2`` and ``4``.
+
+    >>> import numpy as np
+    >>> from scipy import special
+    >>> import matplotlib.pyplot as plt
+    >>> m = np.asarray([2, 4])
+    >>> q = 50
+    >>> x = np.linspace(-180, 180, 300)[:, np.newaxis]
+    >>> y, _ = special.mathieu_cem(m, q, x)
+    >>> plt.plot(x, y)
+    >>> plt.xlabel('x (degrees)')
+    >>> plt.ylabel('y')
+    >>> plt.legend(('m = 2', 'm = 4'))
+
+    Because the orders ``2`` and
+    ``4`` are even, the period of each function is 180 degrees.
+
     )";
 
 const char *mathieu_modcem1_doc = R"(
@@ -4860,6 +4962,42 @@ const char *mathieu_sem_doc = R"(
     See Also
     --------
     mathieu_a, mathieu_b, mathieu_cem
+
+    Notes
+    -----
+    Odd Mathieu functions are the solutions to Mathieu's differential equation
+
+    .. math::
+
+        \frac{d^2y}{dx^2} + (b_m - 2q \cos(2x))y = 0
+
+    for which the characteristic number :math:`b_m` (calculated with `mathieu_b`)
+    results in an odd, periodic solution :math:`y(x)` with period 180 degrees
+    (for even :math:`m`) or 360 degrees (for odd :math:`m`).
+
+    References
+    ----------
+    .. [1] 'Mathieu function'. *Wikipedia*.
+           https://en.wikipedia.org/wiki/Mathieu_function
+
+    Examples
+    --------
+    Plot odd Mathieu functions of orders ``2`` and ``4``.
+
+    >>> import numpy as np
+    >>> from scipy import special
+    >>> import matplotlib.pyplot as plt
+    >>> m = np.asarray([2, 4])
+    >>> q = 50
+    >>> x = np.linspace(-180, 180, 300)[:, np.newaxis]
+    >>> y, _ = special.mathieu_sem(m, q, x)
+    >>> plt.plot(x, y)
+    >>> plt.xlabel('x (degrees)')
+    >>> plt.ylabel('y')
+    >>> plt.legend(('m = 2', 'm = 4'))
+
+    Because the orders ``2`` and
+    ``4`` are even, the period of each function is 180 degrees.
 
     )";
 
