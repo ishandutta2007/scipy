@@ -750,6 +750,29 @@ class MapWrapper:
                             " form f(func, iterable)") from e
 
 
+def _workers_wrapper(func):
+    """
+    Wrapper to deal with setup-cleanup of workers outside a user function via a
+    ContextManager. It saves having to do the setup/tear down with within that
+    function, which can be messy.
+    """
+    @functools.wraps(func)
+    def inner(*args, **kwds):
+        kwargs = kwds.copy()
+        if 'workers' not in kwargs:
+            _workers = map
+        elif 'workers' in kwargs and kwargs['workers'] is None:
+            _workers = map
+        else:
+            _workers = kwargs['workers']
+
+        with MapWrapper(_workers) as mf:
+            kwargs['workers'] = mf
+            return func(*args, **kwargs)
+
+    return inner
+
+
 def rng_integers(gen, low, high=None, size=None, dtype='int64',
                  endpoint=False):
     """
@@ -1079,7 +1102,9 @@ def _get_nan(*data, xp=None):
     except DTypePromotionError:
         # fallback to float64
         dtype = xp.float64
-    return xp.asarray(xp.nan, dtype=dtype)[()]
+    res = xp.asarray(xp.nan, dtype=dtype)[()]
+    # whenever mdhaber/marray#89 is resolved, could just return `res`
+    return res.data if is_marray(xp) else res
 
 
 def normalize_axis_index(axis, ndim):
@@ -1322,3 +1347,15 @@ def _apply_over_batch(*argdefs):
 
         return wrapper
     return decorator
+
+
+def np_vecdot(x1, x2, /, *, axis=-1):
+    # `np.vecdot` has advantages (e.g. see gh-22462), so let's use it when
+    # available. As functions are translated to Array API, `np_vecdot` can be
+    # replaced with `xp.vecdot`.
+    if np.__version__ > "2.0":
+        return np.vecdot(x1, x2, axis=axis)
+    else:
+        # of course there are other fancy ways of doing this (e.g. `einsum`)
+        # but let's keep it simple since it's temporary
+        return np.sum(x1 * x2, axis=axis)
